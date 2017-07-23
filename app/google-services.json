@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "834949514794",
+    "project_id": "smartchairn"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:834949514794:android:33f8bf3cf77ce422",
+        "android_client_info": {
+          "package_name": "com.posturealert.smartchair"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "834949514794-9jv534g60nddi08hic2tnthevfn6ah4r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.posturealert.smartchair",
+            "certificate_hash": "357f331e796b6da69d7d14326a1636000848c69c"
+          }
+        },
+        {
+          "client_id": "834949514794-v1qnuaj1bct0gl0lf015gur15redfmh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzJW5h9MsyR4wRyvbdOgnd08g5-GBAHFA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

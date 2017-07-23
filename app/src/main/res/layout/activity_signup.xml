@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingTop="56dp"
         android:paddingLeft="24dp"
-        android:paddingRight="24dp">
+        android:paddingRight="24dp"
+        android:weightSum="1">
 
         <ImageView android:src="@drawable/logo"
             android:layout_width="wrap_content"
@@ -93,6 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp">
+
             <EditText android:id="@+id/input_reEnterPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -117,6 +119,24 @@
             android:text="Already a member? Login"
             android:gravity="center"
             android:textSize="16dip"/>
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="339dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="34dp"
+            android:layout_marginRight="34dp"
+            android:layout_weight="0.08">
+
+        </com.google.android.gms.common.SignInButton>
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="224dp"
+            android:layout_weight="0.07" />
 
     </LinearLayout>
 </ScrollView>

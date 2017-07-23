@@ -3,6 +3,7 @@ package com.posturealert.smartchair;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -11,10 +12,36 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
-public class SignupActivity extends AppCompatActivity {
+public class SignupActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "SignupActivity";
 
     @Bind(R.id.input_name) EditText _nameText;
@@ -25,11 +52,26 @@ public class SignupActivity extends AppCompatActivity {
     @Bind(R.id.input_reEnterPassword) EditText _reEnterPasswordText;
     @Bind(R.id.btn_signup) Button _signupButton;
     @Bind(R.id.link_login) TextView _loginLink;
+
+    TextView txtStatus;
+    LoginButton login_button;
+    CallbackManager callbackManager;
+    String firstname = "none";
+    String lastname = "none";
+    String email = "none";
+    String id = "none";
+    String gender = "none";
+    GoogleApiClient mGoogleApiClient;
+    private static int RC_SIGN_IN = 420;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_signup);
+        initialiseControls();
+        initialiseControlsGoogle();
+        loginWithFB();
         ButterKnife.bind(this);
 
         _signupButton.setOnClickListener(new View.OnClickListener() {
@@ -49,6 +91,121 @@ public class SignupActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+    }
+
+
+    private void initialiseControls() {
+        callbackManager = CallbackManager.Factory.create();
+        login_button = (LoginButton) findViewById(R.id.login_button);
+
+    }
+
+    private void initialiseControlsGoogle(){
+
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+    }
+
+    private void loginWithFB() {
+
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("TAAAAAAAAGGGGGG", "SUCCESS");
+                GraphRequest request = GraphRequest.newMeRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(
+                                    JSONObject object,
+                                    GraphResponse response) {
+                                try {
+                                    Log.d("this is it 1", object.toString());
+                                    id = object.getString("id");
+                                    firstname = object.getString("first_name");
+                                    lastname = object.getString("last_name");
+                                    gender = object.getString("gender");
+                                    email = object.getString("email");
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                Log.d("this is it", id + "   " + firstname + "   " + lastname + "   " + email + "   " + gender + "   ");
+                                _nameText.setText(firstname + " " + lastname);
+                                _emailText.setText(email);
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,first_name,last_name,email,gender"); //email not working
+                request.setParameters(parameters);
+                request.executeAsync();
+
+                LoginManager.getInstance().logOut();
+
+
+
+
+
+            }
+
+            @Override
+            public void onCancel() {
+
+                Log.d("TAAAAAAAAGGGGGG", "CANCEL");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+                Log.d("TAAAAAAAAGGGGGG", "ERROR");
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d("TAG", "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            String name = acct.getDisplayName();
+            String email = acct.getEmail();
+            String fname = acct.getFamilyName();
+
+            _nameText.setText(name);
+            _emailText.setText(email);
+
+
+
+            Log.d("GOOGLE HERE", name + email + fname);
+
+
+        } else {
+            // Signed out, show unauthenticated UI.
+            Log.d("TAG", "signed out");
+        }
     }
 
     public void signup() {
@@ -155,5 +312,39 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                signIn();
+                signOut();
+                break;
+
+
+            // ...
+        }
+    }
+
+    private void signIn() {
+
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        // ...
+                    }
+                });
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

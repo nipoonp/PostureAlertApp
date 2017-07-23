@@ -1,6 +1,5 @@
 package com.posturealert.smartchair;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,7 +9,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -19,25 +17,37 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.posturealert.smartchair.com.posturealert.smartchair.api.APIInterface;
+import com.posturealert.smartchair.com.posturealert.smartchair.api.APIReturn;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Dashboard extends AppCompatActivity {
 
+    private static Random randomGenerator = new Random();
 
     // colors for different sections in pieChart
     public static final int[] MY_COLORS = {
-            Color.rgb(84, 124, 101), Color.rgb(64, 64, 215), Color.rgb(153, 19, 0),
-            Color.rgb(38, 40, 53), Color.rgb(215, 60, 55), Color.rgb(215, 215, 55), Color.rgb(60, 215, 55)
+            Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)),
+            Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)),
+            Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)),
+            Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)), Color.rgb(randomGenerator.nextInt(255), randomGenerator.nextInt(255), randomGenerator.nextInt(255)),
     };
-    PieChart mChart;
+    com.github.mikephil.charting.charts.PieChart mChart;
     // we're going to display pie chart for school attendance
-    private int[] yValues = {21, 2, 2, 5, 10, 7, 8};
-    private String[] xValues = {"Present Days", "Absents", "Leaves", "Lean Left", "Lean Right", "Lean Forward", "Normal"};
+    private int[] yValues = {1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private String[] xValues = {"E", "LU", "SF", "LF", "SS", "SB", "LL", "LR", "LC", "RC", "NA", "PP"};
     private TextView mTextMessage;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -77,14 +87,36 @@ public class Dashboard extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        retrofit();
 
         initTime();
 
-        // setting sample Data for Pie Chart
-        initPieChart();
-        setDataForPieChart();
+    }
 
+    public void retrofit(){
+        final TextView textView = (TextView) findViewById(R.id.textView);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://13.55.201.70:8098/").addConverterFactory(GsonConverterFactory.create()).build();
 
+        APIInterface service = retrofit.create(APIInterface.class);
+        Call<APIReturn> call = service.getDashBoardPitChart("1001");
+
+        call.enqueue(new Callback<APIReturn>() {
+            @Override
+            public void onResponse(Call<APIReturn> call, Response<APIReturn> response) {
+                APIReturn s = response.body();
+                textView.setText(s.getE() + " " + s.getLU() + " " + s.getSF() + " " + s.getLF() + " " + s.getSS() + " " + s.getSB() + " " + s.getLL() + " " + s.getLR() + " " + s.getLC() + " " + s.getRC() + " " + s.getNA() + " " + s.getPP());
+                // setting sample Data for Pie Chart
+                initPieChart(s.getE(), s.getLU(), s.getSF(), s.getLF(), s.getSS(), s.getSB(), s.getLL(), s.getLR(), s.getLC(), s.getRC(), s.getNA(), s.getPP());
+                setDataForPieChart();
+            }
+
+            @Override
+            public void onFailure(Call<APIReturn> call, Throwable t) {
+                Toast.makeText(Dashboard.this, "error :(" + call + t, Toast.LENGTH_LONG).show();
+                textView.setText(call + "\n" + t);
+            }
+        });
     }
 
     public void initTime() {
@@ -149,8 +181,22 @@ public class Dashboard extends AppCompatActivity {
         l.setYEntrySpace(5);
     }
 
-    public void initPieChart() {
-        mChart = (PieChart) findViewById(R.id.pieChart);
+    public void initPieChart(String a, String b, String c ,String d, String e, String f, String g, String h, String i, String j, String k, String l) {
+
+        yValues[0] = Integer.valueOf(a);
+        yValues[1] = Integer.valueOf(b);
+        yValues[2] = Integer.valueOf(c);
+        yValues[3] = Integer.valueOf(d);
+        yValues[4] = Integer.valueOf(e);
+        yValues[5] = Integer.valueOf(f);
+        yValues[6] = Integer.valueOf(g);
+        yValues[7] = Integer.valueOf(h);
+        yValues[8] = Integer.valueOf(i);
+        yValues[9] = Integer.valueOf(j);
+        yValues[10] = Integer.valueOf(k);
+        yValues[11] = Integer.valueOf(l);
+
+        mChart = (com.github.mikephil.charting.charts.PieChart) findViewById(R.id.pieChart);
 
         //   mChart.setUsePercentValues(true);
         mChart.setDescription("");
@@ -190,6 +236,5 @@ public class Dashboard extends AppCompatActivity {
             return mFormat.format(value) + ""; // e.g. append a dollar-sign
         }
     }
-
 
 }
