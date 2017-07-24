@@ -38,6 +38,8 @@ import com.google.android.gms.common.api.Status;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
 
@@ -97,6 +99,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     private void initialiseControls() {
         callbackManager = CallbackManager.Factory.create();
         login_button = (LoginButton) findViewById(R.id.login_button);
+        login_button.setReadPermissions(Arrays.asList("email"));
+
 
     }
 
