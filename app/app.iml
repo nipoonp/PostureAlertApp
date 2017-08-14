@@ -151,7 +151,6 @@
     <orderEntry type="library" exported="" name="butterknife-7.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-9.6.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="runner-0.5" level="project" />
-    <orderEntry type="library" exported="" name="facebook-android-sdk-4.24.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-9.6.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-idling-resource-2.2.2" level="project" />
     <orderEntry type="library" exported="" name="transition-25.3.1" level="project" />
@@ -177,6 +176,7 @@
     <orderEntry type="library" exported="" name="support-annotations-25.3.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-analytics-impl-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-appinvite-9.6.1" level="project" />
+    <orderEntry type="library" exported="" name="facebook-android-sdk-4.25.0" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-plus-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-analytics-impl-9.6.1" level="project" />
