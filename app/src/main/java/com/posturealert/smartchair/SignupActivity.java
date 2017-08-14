@@ -194,17 +194,17 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            String name = acct.getDisplayName();
-            String email = acct.getEmail();
-            String fname = acct.getFamilyName();
-            String ID = acct.getId();
+             firstname = acct.getGivenName();
+             email = acct.getEmail();
+             lastname = acct.getFamilyName();
+             id = acct.getId();
 
-            _nameText.setText(name);
+            _nameText.setText(firstname + " " + lastname);
             _emailText.setText(email);
 
 
 
-            Log.d("GOOGLE HERE", name + email + fname + ID);
+            Log.d("GOOGLE HERE", firstname + email + lastname + id);
 
 
         } else {
