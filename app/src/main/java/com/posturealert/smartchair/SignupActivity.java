@@ -65,6 +65,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     String gender = "none";
     GoogleApiClient mGoogleApiClient;
     private static int RC_SIGN_IN = 420;
+
+
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,18 +78,25 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         loginWithFB();
         ButterKnife.bind(this);
 
-        _signupButton.setOnClickListener(new View.OnClickListener() {
+        _signupButton.setOnClickListener(new View.OnClickListener() { // "CREATE ACCOUNT" button
             @Override
             public void onClick(View v) {
                 signup();
             }
         });
 
-        _loginLink.setOnClickListener(new View.OnClickListener() {
+        _loginLink.setOnClickListener(new View.OnClickListener() { // "Already a member? Login" Button
             @Override
             public void onClick(View v) {
                 // Finish the registration screen and return to the Login activity
                 Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+
+                intent.putExtra("firstname", firstname);
+                intent.putExtra("lastname", lastname);
+                intent.putExtra("id", id);
+
+
+
                 startActivity(intent);
                 finish();
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);

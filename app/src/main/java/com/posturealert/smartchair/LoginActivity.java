@@ -23,6 +23,10 @@ public class LoginActivity extends AppCompatActivity {
     @Bind(R.id.input_password) EditText _passwordText;
     @Bind(R.id.btn_login) Button _loginButton;
     @Bind(R.id.link_signup) TextView _signupLink;
+
+    String value2 = "";
+    String value1 = "";
+    String value = "";
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,19 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         _loginButton.setEnabled(false);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+             value = extras.getString("firstname");
+             value1 = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+             value2 = extras.getString("id");
+
+        }
+
+        Log.d("firstname", value);
+        Log.d("lastname", value1);
+        Log.d("id", value2);
+
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
