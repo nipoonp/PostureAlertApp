@@ -197,13 +197,14 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             String name = acct.getDisplayName();
             String email = acct.getEmail();
             String fname = acct.getFamilyName();
+            String ID = acct.getId();
 
             _nameText.setText(name);
             _emailText.setText(email);
 
 
 
-            Log.d("GOOGLE HERE", name + email + fname);
+            Log.d("GOOGLE HERE", name + email + fname + ID);
 
 
         } else {
