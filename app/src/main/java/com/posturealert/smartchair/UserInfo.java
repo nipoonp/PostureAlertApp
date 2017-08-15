@@ -40,7 +40,7 @@ public class UserInfo extends AppCompatActivity {
     public void retrofit(){
         final TextView textView = (TextView) findViewById(R.id.textView);
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://13.55.201.70:8098/").addConverterFactory(GsonConverterFactory.create()).build();
+                .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
 
         APIInterface service = retrofit.create(APIInterface.class);
         Call<APIReturn> call = service.getUserInfo("1001");
