@@ -131,7 +131,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                             v.setEnabled(false);
                             AsyncHttpClient client = new AsyncHttpClient();
                             client.get("http://13.55.201.70:8099/sensorReadings", new AsyncHttpResponseHandler() {
-                                @Override
+                                @Override 
                                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                                     if (responseBody != null) {
 
