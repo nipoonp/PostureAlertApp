@@ -99,7 +99,7 @@ public class Dashboard extends AppCompatActivity {
                 .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
 
         APIInterface service = retrofit.create(APIInterface.class);
-        Call<APIReturn> call = service.getDashBoardPitChart("1001");
+        Call<APIReturn> call = service.getDashBoardPitChart("7");
 
         call.enqueue(new Callback<APIReturn>() {
             @Override

@@ -2,6 +2,7 @@ package com.posturealert.smartchair.com.posturealert.smartchair.api;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
@@ -17,5 +18,8 @@ public interface APIInterface {
 
     @GET("/userInfo/{userID}")
     Call<APIReturn> getUserInfo(@Path("userID") String userID);
+
+    @POST("/trainData/{userID}/{posture}/{time}")
+    Call<APIReturn> trainData(@Path("userID") String userID, @Path("posture") String posture, @Path("time") String time);
 }
 

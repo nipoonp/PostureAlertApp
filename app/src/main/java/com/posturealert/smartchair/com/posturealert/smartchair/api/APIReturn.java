@@ -101,6 +101,9 @@ public class APIReturn {
         return chairID;
     }
 
+    //API trainData
+    private String status;
 
+    public String getStatus() { return status; }
 
 }

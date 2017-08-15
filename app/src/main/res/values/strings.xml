@@ -12,4 +12,5 @@
     <string name="facebook_app_id">102779983691627</string>
     <string name="fb_login_protocol_scheme">fb102779983691627</string>
     <string name="title_activity_user_info">UserInfo</string>
+    <string name="title_activity_train">Train</string>
 </resources>

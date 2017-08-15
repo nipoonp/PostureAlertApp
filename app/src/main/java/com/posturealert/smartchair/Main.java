@@ -1,5 +1,6 @@
 package com.posturealert.smartchair;
 
+import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,24 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
+
+        Button train = (Button)findViewById(R.id.train);
+        train.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View arg0) {
+
+
+                Intent intent = new Intent(getApplicationContext(),Train.class);
+                startActivity(intent);
+            }
+        });
+
+
+
+
+
 
         Button btnGet = (Button) findViewById(R.id.btnGet);
         assert btnGet != null;
@@ -131,7 +152,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                             v.setEnabled(false);
                             AsyncHttpClient client = new AsyncHttpClient();
                             client.get("http://13.55.201.70:8099/sensorReadings", new AsyncHttpResponseHandler() {
-                                @Override 
+                                @Override
                                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                                     if (responseBody != null) {
 
