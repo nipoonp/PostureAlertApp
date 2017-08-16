@@ -21,5 +21,9 @@ public interface APIInterface {
 
     @POST("/trainData/{userID}/{posture}/{time}")
     Call<APIReturn> trainData(@Path("userID") String userID, @Path("posture") String posture, @Path("time") String time);
+
+    @POST("/registerUser/{fname}/{lname}/{email}/{weight}/{height}/{password}")
+    Call<APIReturn> registerUser(@Path("fname") String fname, @Path("lname") String lname, @Path("email") String email, @Path("weight") String weight, @Path("height") String height, @Path("password") String password);
+
 }
 

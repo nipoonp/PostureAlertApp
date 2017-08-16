@@ -34,6 +34,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.posturealert.smartchair.com.posturealert.smartchair.api.APIInterface;
+import com.posturealert.smartchair.com.posturealert.smartchair.api.APIReturn;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +44,11 @@ import java.util.Arrays;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SignupActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "SignupActivity";
@@ -65,6 +72,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     String id = "none";
     String gender = "none";
     GoogleApiClient mGoogleApiClient;
+    int signedUp = 0;
     private static int RC_SIGN_IN = 420;
 
 
@@ -249,29 +257,38 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
-        // TODO: Implement your own signup logic here.
+        // TODO: Implement your own signup logic here. Call NodeJS API
+        retrofit(fname,lname,email,weight,height,password);
+
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
+                        if(signedUp == 1) {
+                            onSignupSuccess();
+                        } else{
+                            onSignupFailed();
+                        }
+                        //
                         progressDialog.dismiss();
                     }
-                }, 10000);
+                }, 5000);
     }
 
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
-        finish(); // TODO Relocate back to login screen.
+        Toast.makeText(getBaseContext(), "Registration Successful! :)", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+        startActivity(intent);
+        //finish(); // TODO Relocate back to login screen.
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Registration failed! You may already be register! :(", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
     }
@@ -377,4 +394,36 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+    public void retrofit(String fname, String lname, String email, String weight, String height, String password){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
+
+        APIInterface service = retrofit.create(APIInterface.class);
+        Call<APIReturn> call = service.registerUser(fname, lname, email, weight, height, password);
+
+
+        call.enqueue(new Callback<APIReturn>() {
+            @Override
+            public void onResponse(Call<APIReturn> call, Response<APIReturn> response) {
+
+                APIReturn s = response.body();
+
+
+                //Toast.makeText(SignupActivity.this, "Success :) " + s.getStatus(), Toast.LENGTH_LONG).show();
+
+                if(s.getStatus().equals("0")){
+                    signedUp = 0;
+                } else if( s.getStatus().equals("1")){
+                    signedUp = 1;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIReturn> call, Throwable t) {
+                Toast.makeText(SignupActivity.this, "error :(" + call + t, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 }

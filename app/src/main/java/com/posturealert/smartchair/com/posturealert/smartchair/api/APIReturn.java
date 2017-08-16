@@ -106,4 +106,8 @@ public class APIReturn {
 
     public String getStatus() { return status; }
 
+    //API RegisterUser
+
+
+
 }
