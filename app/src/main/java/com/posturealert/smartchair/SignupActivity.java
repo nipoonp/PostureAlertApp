@@ -100,9 +100,9 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 // Finish the registration screen and return to the Login activity
                 Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
 
-                intent.putExtra("firstname", firstname);
-                intent.putExtra("lastname", lastname);
-                intent.putExtra("id", id);
+//                intent.putExtra("firstname", firstname);
+//                intent.putExtra("lastname", lastname);
+//                intent.putExtra("id", id);
 
 
 
@@ -257,7 +257,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
 
-        // TODO: Implement your own signup logic here. Call NodeJS API
+        //  Call NodeJS API
         retrofit(fname,lname,email,weight,height,password);
 
 
@@ -288,7 +288,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Registration failed! You may already be register! :(", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Registration failed! You may already be registered! :(", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
     }

@@ -12,8 +12,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.posturealert.smartchair.com.posturealert.smartchair.api.APIInterface;
+import com.posturealert.smartchair.com.posturealert.smartchair.api.APIReturn;
+
 import butterknife.ButterKnife;
 import butterknife.Bind;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -27,6 +35,10 @@ public class LoginActivity extends AppCompatActivity {
     String value2 = "";
     String value1 = "";
     String value = "";
+
+    String fnameDb, lnameDb, idDb, emailDb, weightDb, heightDb, passwordDb;
+
+    int status = 2; //default user does not exist
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,23 +73,23 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "Login");
 
         if (!validate()) {
-            onLoginFailed();
+            Toast.makeText(getBaseContext(), "Invalid Email or Password!", Toast.LENGTH_LONG).show();
             return;
         }
 
         _loginButton.setEnabled(false);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-             value = extras.getString("firstname");
-             value1 = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
-             value2 = extras.getString("id");
-
-        }
-
-        Log.d("firstname", value);
-        Log.d("lastname", value1);
-        Log.d("id", value2);
+//        Bundle extras = getIntent().getExtras();
+//        if (extras != null) {
+//             value = extras.getString("firstname");
+//             value1 = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+//             value2 = extras.getString("id");
+//
+//        }
+//
+//        Log.d("firstname", value);
+//        Log.d("lastname", value1);
+//        Log.d("id", value2);
 
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
@@ -89,14 +101,20 @@ public class LoginActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
+        retrofit(email,password);
+
+
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
+                        if(status == 0){
+                            onLoginSuccess();
+                        }else{
+                            onLoginFailed();
+                        }
+
+                        //
                         progressDialog.dismiss();
                     }
                 }, 3000);
@@ -123,11 +141,35 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+
+        Toast.makeText(getBaseContext(), "Signed In!", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(getApplicationContext(),Main.class);
+
+        intent.putExtra("firstname", fnameDb);
+        intent.putExtra("lastname", lnameDb);
+        intent.putExtra("id", idDb);
+        intent.putExtra("email", emailDb);
+        intent.putExtra("weight", weightDb);
+        intent.putExtra("height", heightDb);
+        intent.putExtra("password", passwordDb); //Dont think we need this.
+
+        startActivity(intent);
+
+
+
+
+
+
         finish();
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+
+        if(status == 2) {
+            Toast.makeText(getBaseContext(), "Login failed, Email Doesn't Exist. Please Register.", Toast.LENGTH_LONG).show();
+        } else if (status == 1){
+            Toast.makeText(getBaseContext(), "Login failed, Incorrect Password.", Toast.LENGTH_LONG).show();
+        }
 
         _loginButton.setEnabled(true);
     }
@@ -154,4 +196,48 @@ public class LoginActivity extends AppCompatActivity {
 
         return valid;
     }
+
+    public void retrofit(String email, String password){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
+
+        APIInterface service = retrofit.create(APIInterface.class);
+        Call<APIReturn> call = service.loginUser(email, password);
+
+
+        call.enqueue(new Callback<APIReturn>() {
+            @Override
+            public void onResponse(Call<APIReturn> call, Response<APIReturn> response) {
+
+                APIReturn s = response.body();
+
+
+                //Toast.makeText(SignupActivity.this, "Success :) " + s.getStatus(), Toast.LENGTH_LONG).show();
+
+                if(s.getStatus().equals("0")){
+                    status = 0;
+                    fnameDb = s.getFname();
+                    lnameDb = s.getLname();
+                    idDb = s.getId();
+                    emailDb = s.getEmail();
+                    weightDb = s.getWeight();
+                    heightDb = s.getHeight();
+                    passwordDb = s.getPassword();
+
+                } else if( s.getStatus().equals("1")){
+                    status = 1;
+                }else if (s.getStatus().equals("2")){
+                    status = 2;
+                }
+            }
+
+            @Override
+            public void onFailure(Call<APIReturn> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "error :(" + call + t, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+
 }

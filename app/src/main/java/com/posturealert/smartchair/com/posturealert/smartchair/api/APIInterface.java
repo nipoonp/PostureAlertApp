@@ -25,5 +25,9 @@ public interface APIInterface {
     @POST("/registerUser/{fname}/{lname}/{email}/{weight}/{height}/{password}")
     Call<APIReturn> registerUser(@Path("fname") String fname, @Path("lname") String lname, @Path("email") String email, @Path("weight") String weight, @Path("height") String height, @Path("password") String password);
 
+    @POST("/loginUser/{email}/{password}")
+    Call<APIReturn> loginUser(@Path("email") String email, @Path("password") String password);
+
+
 }
 
