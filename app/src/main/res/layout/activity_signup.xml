@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:hint="Weight" />
+                android:hint="Weight(kg)" />
         </android.support.design.widget.TextInputLayout>
 
         <!-- Height -->
@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:hint="Height" />
+                android:hint="Height(cm)" />
         </android.support.design.widget.TextInputLayout>
 
         <!-- Password Label -->

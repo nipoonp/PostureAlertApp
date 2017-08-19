@@ -336,7 +336,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         if (height.isEmpty()) {
-            _heightText.setError("Enter valid height in Meters");
+            _heightText.setError("Enter valid height in Centimeters");
             valid = false;
         } else {
             _heightText.setError(null);
