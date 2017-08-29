@@ -46,10 +46,40 @@ public class Train extends AppCompatActivity {
             }
         });
 
+        sw.setImageResource(R.drawable.b1);
 
         train.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+
+                retrofit(String.valueOf(pos));
+
+            }
+        });
+
+
+
+    }
+
+
+    public void retrofit(String posture){
+        final TextView textView = (TextView) findViewById(R.id.textView);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
+
+        long seconds = System.currentTimeMillis() / 1000;
+
+
+        APIInterface service = retrofit.create(APIInterface.class);
+        Call<APIReturn> call = service.trainData("8",posture,String.valueOf(seconds));
+
+        call.enqueue(new Callback<APIReturn>() {
+            @Override
+            public void onResponse(Call<APIReturn> call, Response<APIReturn> response) {
+
+                APIReturn s = response.body();
+
+                pos++;
                 switch(pos) {
                     case 0 :
                         sw.setImageResource(R.drawable.b1);
@@ -91,34 +121,7 @@ public class Train extends AppCompatActivity {
                         // Statements
                 }
 
-                retrofit(String.valueOf(pos));
 
-
-            }
-        });
-
-
-
-    }
-
-
-    public void retrofit(String posture){
-        final TextView textView = (TextView) findViewById(R.id.textView);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
-
-        long seconds = System.currentTimeMillis() / 1000;
-
-
-        APIInterface service = retrofit.create(APIInterface.class);
-        Call<APIReturn> call = service.trainData("7",posture,String.valueOf(seconds));
-
-        call.enqueue(new Callback<APIReturn>() {
-            @Override
-            public void onResponse(Call<APIReturn> call, Response<APIReturn> response) {
-
-                APIReturn s = response.body();
-                pos++;
                 Toast.makeText(Train.this, "Success :) " + s.getStatus(), Toast.LENGTH_LONG).show();
             }
 
