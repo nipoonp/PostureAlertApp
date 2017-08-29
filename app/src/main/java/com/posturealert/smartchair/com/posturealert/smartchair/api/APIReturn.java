@@ -104,10 +104,38 @@ public class APIReturn {
     //API trainData
     private String status;
 
-    public String getStatus() { return status; }
+    public String getStatus() { return status; } //This is the dictionary key, for the json object.
 
-    //API RegisterUser
+    //API LoginUser
+
+    private String fname, lname, id, email, weight, height, password;
 
 
+    public String getFname() {
+        return fname;
+    }
 
+    public String getLname() {
+        return lname;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
