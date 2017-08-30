@@ -36,6 +36,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Dashboard extends AppCompatActivity {
 
     private static Random randomGenerator = new Random();
+    String fnameDb, lnameDb, idDb, emailDb, weightDb, heightDb, passwordDb;
+
 
     // colors for different sections in pieChart
     public static final int[] MY_COLORS = {
@@ -81,7 +83,16 @@ public class Dashboard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            fnameDb = extras.getString("firstname");
+            lnameDb = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+            idDb = extras.getString("id");
+            emailDb = extras.getString("email");
+            weightDb = extras.getString("weight");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+            heightDb = extras.getString("height");
+            passwordDb = extras.getString("password");
+        }
 
         mTextMessage = (TextView) findViewById(R.id.graphTitle);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -99,7 +110,7 @@ public class Dashboard extends AppCompatActivity {
                 .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
 
         APIInterface service = retrofit.create(APIInterface.class);
-        Call<APIReturn> call = service.getDashBoardPitChart("7");
+        Call<APIReturn> call = service.getDashBoardPitChart(idDb);
 
         call.enqueue(new Callback<APIReturn>() {
             @Override

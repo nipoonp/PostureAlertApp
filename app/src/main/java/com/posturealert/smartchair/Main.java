@@ -36,6 +36,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
     Thread notifyThread;
 
     NotificationCompat.Builder notfication;
+    String fnameDb, lnameDb, idDb, emailDb, weightDb, heightDb, passwordDb;
 
     private static final int uniqueID = 45612;
 
@@ -45,6 +46,17 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        Bundle extras = getIntent().getExtras();
+                if (extras != null) {
+                fnameDb = extras.getString("firstname");
+                lnameDb = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+                idDb = extras.getString("id");
+                emailDb = extras.getString("email");
+                weightDb = extras.getString("weight");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+                heightDb = extras.getString("height");
+                passwordDb = extras.getString("password");
+                }
+
 
 
         Button train = (Button)findViewById(R.id.train);
@@ -131,6 +143,15 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
 
     public void getReport(View v) {
         Intent newIntent = new Intent(Main.this, Dashboard.class);
+
+        newIntent.putExtra("firstname", fnameDb);
+        newIntent.putExtra("lastname", lnameDb);
+        newIntent.putExtra("id", idDb);
+        newIntent.putExtra("email", emailDb);
+        newIntent.putExtra("weight", weightDb);
+        newIntent.putExtra("height", heightDb);
+        newIntent.putExtra("password", passwordDb); //Dont think we need this.
+
         startActivity(newIntent);
     }
 
