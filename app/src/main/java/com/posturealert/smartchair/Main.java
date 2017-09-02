@@ -3,9 +3,14 @@ package com.posturealert.smartchair;
 import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
@@ -25,20 +30,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
+import android.os.Vibrator;
+
 
 public class Main extends AppCompatActivity implements View.OnClickListener {
 
     public Button b0, b1, b2, b3, b4;
     public boolean s0_saturated, s1_saturated, s2_saturated, s3_saturated, s4_saturated;
-    public boolean notifyFlag = true;
+    public boolean notifyFlag = false;
     public int SATURATION_LIMIT = 1000;
 
-    Thread notifyThread;
+    Thread posture_thread;
 
     NotificationCompat.Builder notfication;
     String fnameDb, lnameDb, idDb, emailDb, weightDb, heightDb, passwordDb;
-
+    int notification_counter = 0;
+    boolean bad = true;
+    int posture_value = 0;
     private static final int uniqueID = 45612;
+
 
 
     @Override
@@ -71,11 +81,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
             }
         });
 
-
-
-
-
-
         Button btnGet = (Button) findViewById(R.id.btnGet);
         assert btnGet != null;
         btnGet.setOnClickListener(this);
@@ -89,36 +94,78 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         notfication.setSmallIcon(R.mipmap.ic_launcher);
         notfication.setTicker("This is the ticker");
         notfication.setWhen(System.currentTimeMillis());
-        notfication.setContentTitle("This is the title");
-        notfication.setContentText("this is the text of the title");
+        notfication.setContentTitle("Posture Alert");
+        notfication.setContentText("Bad Posture Detected!");
         notfication.setContentIntent(pendingintent);
 
-
-        //this stuff is essentially running on the UI thread. //TOO MUCH COMPUTATION
+        //Check the most recent posture value. EVERY 2 SECONDS.
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
-                while (notifyFlag) {
+                while (true) {
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     handler.post(new Runnable() {
                         public void run() {
+                            if (notifyFlag) {
+                                AsyncHttpClient client2 = new AsyncHttpClient();
+                                client2.get("http://13.55.201.70:8099/getNotifications/" + idDb, new AsyncHttpResponseHandler() {
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                        if (responseBody != null) {
 
-                            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                            nm.notify(uniqueID, notfication.build());
-                            Log.d("Tag1", "got notification");
+                                            try {
+                                                JSONObject jsonObj = new JSONObject(new String(responseBody));
+                                                posture_value = jsonObj.getInt("Posture");
+                                                Log.d("Posture", Integer.toString(posture_value));
+                                                //TODO check which ones are the correct posture
+
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            if (bad) {
+                                                notification_counter = notification_counter + 1;
+                                            } else {
+                                                notification_counter = 0;
+                                            }
+
+                                            if (notification_counter == 5) { // change this to get a different time for notfications
+                                                notification_counter = 0;
+                                                NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                                nm.notify(uniqueID, notfication.build());
+                                                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                                v.vibrate(500);
+                                                MakeSound();
+                                                ScreenOn();
+
+                                                Log.d("Tag1", "got notification");
+                                            }
 
 
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                        Log.d("ERROR", "ERROR HAS OCCURED");
+                                    }
+                                });
+
+
+                            }
                         }
                     });
                 }
             }
         };
 
-        notifyThread = new Thread(runnable);
+
+        posture_thread = new Thread(runnable);
+
 
         b0 = (Button) findViewById(R.id.b0);
         b1 = (Button) findViewById(R.id.b1);
@@ -126,19 +173,49 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         b3 = (Button) findViewById(R.id.b3);
         b4 = (Button) findViewById(R.id.b4);
 
-
-        notifyThread.start();
+        posture_thread.start();
 
     }
 
-    public void StopNotifications(View v) {
-        Log.d("Tag2", "ran this code");
-        notifyFlag = false;
+    public void ScreenOn(){
+
+        PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isScreenOn();
+        if(isScreenOn==false)
+        {
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MyLock");
+            wl.acquire(10000);
+            PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MyCpuLock");
+
+            wl_cpu.acquire(10000);
+        }
+
+
+    }
+
+    public void MakeSound(){
         try {
-            notifyThread.join();
-        } catch (InterruptedException e) {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+            r.play();
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void ToggleNotifications(View v) {
+        Log.d("Tag2", "ran this code");
+        notifyFlag = !notifyFlag;
+        if(notifyFlag){
+            Toast.makeText(getBaseContext(), "Notifications ON", Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(getBaseContext(), "Notifications OFF", Toast.LENGTH_LONG).show();
+        }
+//        try {
+//            notifyThread.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void getReport(View v) {
