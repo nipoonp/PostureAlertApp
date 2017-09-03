@@ -138,4 +138,16 @@ public class APIReturn {
     public String getPassword() {
         return password;
     }
+
+    private int[] posture_values, time_values;
+
+    public int[] getPostureValues() { return posture_values; }
+
+    public int[] getTimeValues() { return time_values; }
+
+    int good_pos_cont, bad_pos_cont;
+
+    public int getGoodPosCount() { return good_pos_cont; }
+
+    public int getBadPosCount() { return bad_pos_cont; }
 }

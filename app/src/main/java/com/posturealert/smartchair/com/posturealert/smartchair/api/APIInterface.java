@@ -16,6 +16,12 @@ public interface APIInterface {
     @GET("/dashBoardPieChart/{userID}")
     Call<APIReturn> getDashBoardPitChart(@Path("userID") String userID);
 
+    @GET("/dashBoardLineChart/{userID}")
+    Call<APIReturn> getDashBoardLineChart(@Path("userID") String userID);
+
+    @GET("/dashBoardLineChart/{userID}")
+    Call<APIReturn> dashBoardPosturePercentageChart(@Path("userID") String userID);
+
     @GET("/userInfo/{userID}")
     Call<APIReturn> getUserInfo(@Path("userID") String userID);
 
