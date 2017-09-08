@@ -55,27 +55,38 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
         Bundle extras = getIntent().getExtras();
-                if (extras != null) {
-                fnameDb = extras.getString("firstname");
-                lnameDb = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
-                idDb = extras.getString("id");
-                emailDb = extras.getString("email");
-                weightDb = extras.getString("weight");  // When you click login AFTER REGISTER SCREEN, values are recevied.
-                heightDb = extras.getString("height");
-                passwordDb = extras.getString("password");
-                }
+        if (extras != null) {
+            fnameDb = extras.getString("firstname");
+            lnameDb = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+            idDb = extras.getString("id");
+            emailDb = extras.getString("email");
+            weightDb = extras.getString("weight");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+            heightDb = extras.getString("height");
+            passwordDb = extras.getString("password");
+        }
 
 
 
         Button train = (Button)findViewById(R.id.train);
+
         train.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View arg0) {
 
 
+
                 Intent intent = new Intent(getApplicationContext(),Train.class);
+                intent.putExtra("firstname", fnameDb);
+                intent.putExtra("lastname", lnameDb);
+                intent.putExtra("id", idDb);
+                intent.putExtra("email", emailDb);
+                intent.putExtra("weight", weightDb);
+                intent.putExtra("height", heightDb);
+                intent.putExtra("password", passwordDb); //Dont think we need this.
+
                 startActivity(intent);
             }
         });
@@ -109,6 +120,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                     }
                     handler.post(new Runnable() {
                         public void run() {
+<<<<<<< HEAD
 
                                 AsyncHttpClient client2 = new AsyncHttpClient();
                                 client2.get("http://13.55.201.70:8099/getNotifications/" + idDb, new AsyncHttpResponseHandler() {
@@ -155,17 +167,69 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                                                 }
 
                                             }
+=======
+
+                            AsyncHttpClient client2 = new AsyncHttpClient();
+                            client2.get("http://13.55.201.70:8099/getNotifications/" + idDb, new AsyncHttpResponseHandler() {
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                    if (responseBody != null) {
+
+                                        try {
+                                            JSONObject jsonObj = new JSONObject(new String(responseBody));
+                                            posture_value_good = jsonObj.getInt("good_posture_time");
+                                            posture_value_bad = jsonObj.getInt("bad_posture_time");
+                                            textGoesHere = (TextView) findViewById(R.id.txtResponse);
+                                            textGoesHere2 = (TextView) findViewById(R.id.txtResponse2);
+                                            Log.d("Posture", Integer.toString(posture_value_good));
+                                            Log.d("Posture2", Integer.toString(posture_value_bad));
+                                            textGoesHere.setText("GOOD: " + convertTime(2* posture_value_good));
+                                            textGoesHere2.setText("BAD: " + convertTime(2* posture_value_bad));
+
+
+                                            // check which ones are the correct posture
+
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        if(notifyFlag) {
+                                            if (posture_value_good == old_posture_value_good) {
+                                                notification_counter++;
+                                            } else {
+                                                notification_counter = 0;
+                                            }
+
+                                            old_posture_value_good = posture_value_good;
+
+                                            if (notification_counter == 5) { // change this to get a different time for notfications
+                                                notification_counter = 0;
+                                                NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                                nm.notify(uniqueID, notfication.build());
+                                                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                                v.vibrate(500);
+                                                MakeSound();
+                                                ScreenOn();
+
+                                                Log.d("Tag1", "got notification");
+                                            }
+
+>>>>>>> f6482196ca2e58f65d6a1e67e445c06995e1d73f
                                         }
                                     }
+                                }
 
-                                    @Override
-                                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                        Log.d("ERROR", "ERROR HAS OCCURED");
-                                    }
-                                });
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                    Log.d("ERROR", "ERROR HAS OCCURED");
+                                }
+                            });
 
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> f6482196ca2e58f65d6a1e67e445c06995e1d73f
                         }
                     });
                 }
@@ -174,15 +238,27 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
 
 
         posture_thread = new Thread(runnable);
-
-
-        b0 = (Button) findViewById(R.id.b0);
-        b1 = (Button) findViewById(R.id.b1);
-        b2 = (Button) findViewById(R.id.b2);
-        b3 = (Button) findViewById(R.id.b3);
-        b4 = (Button) findViewById(R.id.b4);
-
         posture_thread.start();
+    }
+
+    private String convertTime(int totalSecs){
+
+        int hours = totalSecs / 3600;
+        int minutes = (totalSecs % 3600) / 60;
+        int seconds = totalSecs % 60;
+
+        if (hours == 0){
+            return minutes + ":" + seconds;
+        } else {
+            return hours + ":" + minutes + ":" + seconds;
+        }
+
+
+<<<<<<< HEAD
+        posture_thread.start();
+=======
+
+>>>>>>> f6482196ca2e58f65d6a1e67e445c06995e1d73f
     }
 
     public void ScreenOn(){
