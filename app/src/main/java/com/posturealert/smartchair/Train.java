@@ -1,5 +1,6 @@
 package com.posturealert.smartchair;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,13 +27,27 @@ public class Train extends AppCompatActivity {
 
     private ImageSwitcher sw;
     private Button train;
-    private int pos = 0;
+    private int pos = 11;
+
+    String fnameDb, lnameDb, idDb, emailDb, weightDb, heightDb, passwordDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_train);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            fnameDb = extras.getString("firstname");
+            lnameDb = extras.getString("lastname");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+            idDb = extras.getString("id");
+            emailDb = extras.getString("email");
+            weightDb = extras.getString("weight");  // When you click login AFTER REGISTER SCREEN, values are recevied.
+            heightDb = extras.getString("height");
+            passwordDb = extras.getString("password");
+        }
 
         sw = (ImageSwitcher) findViewById(R.id.imgsw);
         train = (Button) findViewById(R.id.train);
@@ -46,32 +61,28 @@ public class Train extends AppCompatActivity {
             }
         });
 
-        sw.setImageResource(R.drawable.b1);
+        sw.setImageResource(R.drawable.a12);
 
         train.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-
-                retrofit(String.valueOf(pos));
-
+                retrofit();
             }
         });
-
-
 
     }
 
 
-    public void retrofit(String posture){
+    public void retrofit(){
         final TextView textView = (TextView) findViewById(R.id.textView);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://13.55.201.70:8099/").addConverterFactory(GsonConverterFactory.create()).build();
 
-        long seconds = System.currentTimeMillis() / 1000;
+        long seconds = System.currentTimeMillis()/1000;
 
 
         APIInterface service = retrofit.create(APIInterface.class);
-        Call<APIReturn> call = service.trainData("8",posture,String.valueOf(seconds));
+        Call<APIReturn> call = service.trainData(idDb,String.valueOf(pos),String.valueOf(seconds));
 
         call.enqueue(new Callback<APIReturn>() {
             @Override
@@ -79,43 +90,27 @@ public class Train extends AppCompatActivity {
 
                 APIReturn s = response.body();
 
-                pos++;
                 switch(pos) {
-                    case 0 :
-                        sw.setImageResource(R.drawable.b1);
-                        break;
-                    case 1 :
-                        sw.setImageResource(R.drawable.b2);
-                        break;
-                    case 2 :
-                        sw.setImageResource(R.drawable.b3);
-                        break;
-                    case 3 :
-                        sw.setImageResource(R.drawable.b4);
-                        break;
-                    case 4 :
-                        sw.setImageResource(R.drawable.b5);
-                        break;
                     case 5 :
-                        sw.setImageResource(R.drawable.b6);
+//                        sw.setImageResource(R.drawable.b6);
+                        Intent intent = new Intent(getApplicationContext(),Main.class);
+                        intent.putExtra("firstname", fnameDb);
+                        intent.putExtra("lastname", lnameDb);
+                        intent.putExtra("id", idDb);
+                        intent.putExtra("email", emailDb);
+                        intent.putExtra("weight", weightDb);
+                        intent.putExtra("height", heightDb);
+                        intent.putExtra("password", passwordDb); //Dont think we need this.
+
+                        startActivity(intent);
                         break;
                     case 6 :
-                        sw.setImageResource(R.drawable.a7);
-                        break;
-                    case 7 :
-                        sw.setImageResource(R.drawable.a8);
-                        break;
-                    case 8 :
-                        sw.setImageResource(R.drawable.a9);
-                        break;
-                    case 9 :
-                        sw.setImageResource(R.drawable.a10);
-                        break;
-                    case 10 :
-                        sw.setImageResource(R.drawable.a11);
+                        sw.setImageResource(R.drawable.b6);
+                        pos = 5;
                         break;
                     case 11 :
-                        sw.setImageResource(R.drawable.a12);
+                        sw.setImageResource(R.drawable.a7);
+                        pos = 6;
                         break;
                     default : // Optional
                         // Statements
