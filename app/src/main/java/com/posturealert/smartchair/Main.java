@@ -1,11 +1,9 @@
 package com.posturealert.smartchair;
 
-import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -18,8 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,18 +32,21 @@ import android.os.Vibrator;
 public class Main extends AppCompatActivity implements View.OnClickListener {
 
     public Button b0, b1, b2, b3, b4;
-    public boolean s0_saturated, s1_saturated, s2_saturated, s3_saturated, s4_saturated;
     public boolean notifyFlag = false;
-    public int SATURATION_LIMIT = 1000;
 
     Thread posture_thread;
-
     NotificationCompat.Builder notfication;
     String fnameDb, lnameDb, idDb, emailDb, weightDb, heightDb, passwordDb;
     int notification_counter = 0;
-    boolean bad = true;
-    int posture_value = 0;
+    int posture_value_good = 0;
+    int posture_value_bad = 0;
+    int old_posture_value_good = 99999;
+
     private static final int uniqueID = 45612;
+
+    //Timer stuff
+    TextView textGoesHere;
+    TextView textGoesHere2;
 
 
 
@@ -110,7 +109,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                     }
                     handler.post(new Runnable() {
                         public void run() {
-                            if (notifyFlag) {
+
                                 AsyncHttpClient client2 = new AsyncHttpClient();
                                 client2.get("http://13.55.201.70:8099/getNotifications/" + idDb, new AsyncHttpResponseHandler() {
                                     @Override
@@ -119,33 +118,43 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
 
                                             try {
                                                 JSONObject jsonObj = new JSONObject(new String(responseBody));
-                                                posture_value = jsonObj.getInt("Posture");
-                                                Log.d("Posture", Integer.toString(posture_value));
-                                                //TODO check which ones are the correct posture
+                                                posture_value_good = jsonObj.getInt("good_posture_time");
+                                                posture_value_bad = jsonObj.getInt("bad_posture_time");
+                                                textGoesHere = (TextView) findViewById(R.id.txtResponse);
+                                                textGoesHere2 = (TextView) findViewById(R.id.txtResponse2);
+                                                Log.d("Posture", Integer.toString(posture_value_good));
+                                                Log.d("Posture2", Integer.toString(posture_value_bad));
+                                                textGoesHere.setText("GOOD: " + Integer.toString(2* posture_value_good));
+                                                textGoesHere2.setText("BAD: " + Integer.toString(2* posture_value_bad));
+
+
+                                                // check which ones are the correct posture
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
+                                            if(notifyFlag) {
+                                                if (posture_value_good == old_posture_value_good) {
+                                                    notification_counter++;
+                                                } else {
+                                                    notification_counter = 0;
+                                                }
 
-                                            if (bad) {
-                                                notification_counter = notification_counter + 1;
-                                            } else {
-                                                notification_counter = 0;
+                                                old_posture_value_good = posture_value_good;
+
+                                                if (notification_counter == 5) { // change this to get a different time for notfications
+                                                    notification_counter = 0;
+                                                    NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                                    nm.notify(uniqueID, notfication.build());
+                                                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                                    v.vibrate(500);
+                                                    MakeSound();
+                                                    ScreenOn();
+
+                                                    Log.d("Tag1", "got notification");
+                                                }
+
                                             }
-
-                                            if (notification_counter == 5) { // change this to get a different time for notfications
-                                                notification_counter = 0;
-                                                NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                                                nm.notify(uniqueID, notfication.build());
-                                                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                                                v.vibrate(500);
-                                                MakeSound();
-                                                ScreenOn();
-
-                                                Log.d("Tag1", "got notification");
-                                            }
-
-
                                         }
                                     }
 
@@ -156,7 +165,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                                 });
 
 
-                            }
+
                         }
                     });
                 }
@@ -174,7 +183,6 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         b4 = (Button) findViewById(R.id.b4);
 
         posture_thread.start();
-
     }
 
     public void ScreenOn(){
@@ -203,13 +211,17 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         }
     }
 
-    public void ToggleNotifications(View v) {
+
+    public void ToggleNotifications(View v) { //on click
         Log.d("Tag2", "ran this code");
         notifyFlag = !notifyFlag;
         if(notifyFlag){
             Toast.makeText(getBaseContext(), "Notifications ON", Toast.LENGTH_LONG).show();
+
         }else{
             Toast.makeText(getBaseContext(), "Notifications OFF", Toast.LENGTH_LONG).show();
+
+
         }
 //        try {
 //            notifyThread.join();
@@ -248,71 +260,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                     handler.post(new Runnable() {
                         public void run() {
                             v.setEnabled(false);
-                            AsyncHttpClient client = new AsyncHttpClient();
-                            client.get("http://13.55.201.70:8099/sensorReadings", new AsyncHttpResponseHandler() {
-                                @Override
-                                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                                    if (responseBody != null) {
 
-                                        TextView txtResponse = (TextView) findViewById(R.id.txtResponse);
-                                        TextView txtResponse2 = (TextView) findViewById(R.id.txtResponse2);
-                                        assert txtResponse != null;
-                                        txtResponse.setText(new String(responseBody));
-
-                                        try {
-                                            JSONObject jsonObj = new JSONObject(new String(responseBody));
-                                            int s0 = jsonObj.getInt("s0");
-                                            int s1 = jsonObj.getInt("s1");
-                                            int s2 = jsonObj.getInt("s2");
-                                            int s3 = jsonObj.getInt("s3");
-                                            int s4 = jsonObj.getInt("s4");
-
-                                            b0.setBackgroundColor(Color.rgb(255, 255 - s0 / 4, 255 - s0 / 4));
-                                            b1.setBackgroundColor(Color.rgb(255, 255 - s1 / 4, 255 - s1 / 4));
-                                            b2.setBackgroundColor(Color.rgb(255, 255 - s2 / 4, 255 - s2 / 4));
-                                            b3.setBackgroundColor(Color.rgb(255, 255 - s3 / 4, 255 - s3 / 4));
-                                            b4.setBackgroundColor(Color.rgb(255, 255 - s4 / 4, 255 - s4 / 4));
-
-                                            s0_saturated = (s0 < SATURATION_LIMIT) ? true : false;
-                                            s1_saturated = (s1 < SATURATION_LIMIT) ? true : false;
-                                            s2_saturated = (s2 < SATURATION_LIMIT) ? true : false;
-                                            s3_saturated = (s3 < SATURATION_LIMIT) ? true : false;
-                                            s4_saturated = (s4 < SATURATION_LIMIT) ? true : false;
-
-                                            if (s0_saturated == false && s1_saturated == false && s2_saturated == false && s3_saturated == false) {
-                                                txtResponse2.setText(new String("1. Seat not in use..."));
-                                            } else if (s0_saturated == false && s1_saturated == false && s2_saturated == true && s3_saturated == true) {
-                                                txtResponse2.setText(new String("2. User is in front of chair with legs raised..."));
-                                            } else if (s0_saturated == true && s1_saturated == true && s2_saturated == false && s3_saturated == false) {
-                                                txtResponse2.setText(new String("6. Front of chair, leaning backward..."));
-                                            } else if (s0_saturated == true && s1_saturated == true && s2_saturated == true && s3_saturated == false) {
-                                                txtResponse2.setText(new String("7. Leaning left or forward left..."));
-                                            } else if (s0_saturated == true && s1_saturated == true && s2_saturated == false && s3_saturated == true) {
-                                                txtResponse2.setText(new String("8. Leaning right or forward right..."));
-                                            } else if (s0_saturated == false && s1_saturated == true && s2_saturated == true && s3_saturated == true) {
-                                                txtResponse2.setText(new String("9. Left leg crossed"));
-                                            } else if (s0_saturated == true && s1_saturated == false && s2_saturated == true && s3_saturated == true) {
-                                                txtResponse2.setText(new String("10. Right leg crossed..."));
-                                            } else if (s0_saturated == false && s1_saturated == false && s2_saturated == true && s3_saturated == true) {
-                                                txtResponse2.setText(new String("11. Torso and legs are correctly aligned..."));
-                                            } else {
-                                                txtResponse2.setText(new String("Suhan is gay..."));
-                                            }
-
-
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    }
-                                    v.setEnabled(true);
-                                }
-
-                                @Override
-                                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                    v.setEnabled(true);
-                                }
-                            });
                         }
                     });
                 }
