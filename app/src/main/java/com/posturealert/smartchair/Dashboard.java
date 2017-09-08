@@ -130,10 +130,11 @@ public class Dashboard extends AppCompatActivity {
         }
 
         mTextMessage = (TextView) findViewById(R.id.graphTitle);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         mChart = (com.github.mikephil.charting.charts.PieChart) findViewById(R.id.pieChart);
         lineChart = (com.github.mikephil.charting.charts.LineChart) findViewById(R.id.lineChart);
         barChart = (com.github.mikephil.charting.charts.BarChart) findViewById(R.id.barChart);
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         graph = 0;

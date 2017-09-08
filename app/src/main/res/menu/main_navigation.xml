@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_notification"
+        android:icon="@drawable/ic_notifications_active_black_36dp"
+        android:title="Alerts" />
+
+    <item
+        android:id="@+id/navigation_train"
+        android:icon="@drawable/train"
+        android:title="Train" />
+
+    <item
+        android:id="@+id/navigation_reports"
+        android:icon="@drawable/barcharticon"
+        android:title="Reports" />
+</menu>
