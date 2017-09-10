@@ -66,6 +66,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_notification:
+                    ToggleNotifications();
                     return true;
                 case R.id.navigation_train:
 
@@ -80,6 +81,19 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
 
                     startActivity(intent);
                     return true;
+                case R.id.navigation_Profile:
+                    Intent nIntent = new Intent(Main.this, Profile.class);
+
+                    nIntent.putExtra("firstname", fnameDb);
+                    nIntent.putExtra("lastname", lnameDb);
+                    nIntent.putExtra("id", idDb);
+                    nIntent.putExtra("email", emailDb);
+                    nIntent.putExtra("weight", weightDb);
+                    nIntent.putExtra("height", heightDb);
+                    nIntent.putExtra("password", passwordDb); //Dont think we need this.
+
+                    startActivity(nIntent);
+                    return true;
                 case R.id.navigation_reports:
                     Intent newIntent = new Intent(Main.this, Dashboard.class);
 
@@ -92,6 +106,19 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                     newIntent.putExtra("password", passwordDb); //Dont think we need this.
 
                     startActivity(newIntent);
+                    return true;
+                case R.id.navigation_Summary:
+                    Intent neIntent = new Intent(Main.this, Summary.class);
+
+                    neIntent.putExtra("firstname", fnameDb);
+                    neIntent.putExtra("lastname", lnameDb);
+                    neIntent.putExtra("id", idDb);
+                    neIntent.putExtra("email", emailDb);
+                    neIntent.putExtra("weight", weightDb);
+                    neIntent.putExtra("height", heightDb);
+                    neIntent.putExtra("password", passwordDb); //Dont think we need this.
+
+                    startActivity(neIntent);
                     return true;
             }
             return false;
@@ -356,7 +383,7 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
     }
 
 
-    public void ToggleNotifications(View v) { //on click
+    public void ToggleNotifications() { //on click
         Log.d("Tag2", "ran this code");
         notifyFlag = !notifyFlag;
         if(notifyFlag){

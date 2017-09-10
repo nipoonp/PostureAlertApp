@@ -13,4 +13,6 @@
     <string name="fb_login_protocol_scheme">fb102779983691627</string>
     <string name="title_activity_user_info">UserInfo</string>
     <string name="title_activity_train">Train</string>
+    <string name="title_activity_summary">Summary</string>
+    <string name="title_activity_profile">Profile</string>
 </resources>

@@ -3,17 +3,15 @@
     package="com.posturealert.smartchair">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:largeHeap="true">
-
-
+        android:theme="@style/AppTheme">
         <activity
             android:name=".Dashboard"
             android:label="@string/title_activity_dashboard"
@@ -66,6 +64,14 @@
         <activity
             android:name=".Train"
             android:label="@string/title_activity_train"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Summary"
+            android:label="@string/title_activity_summary"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Profile"
+            android:label="@string/title_activity_profile"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
