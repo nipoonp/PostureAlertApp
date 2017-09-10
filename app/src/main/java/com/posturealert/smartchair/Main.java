@@ -42,10 +42,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
 
     Thread posture_thread;
     NotificationCompat.Builder notfication;
+    NotificationCompat.Builder notfication2;
     String fnameDb, lnameDb, idDb, emailDb, weightDb, heightDb, passwordDb;
     int notification_counter = 0;
+    int notification2_counter = 0;
+
     int posture_value_good = 0;
     int posture_value_bad = 0;
+    int recent_posture = 0;
     int old_posture_value_good = 99999;
     int Entries = 0;
     int Bad_posture = 0;
@@ -249,18 +253,36 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
 //        assert btnGet != null;
 //        btnGet.setOnClickListener(this);
 
+        /////// Bad Posture Notfication stuff/////////////////////////////
         notfication = new NotificationCompat.Builder(this);
         notfication.setAutoCancel(true);
 
         Intent intent = new Intent(this, Main.class);
         final PendingIntent pendingintent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        notfication.setSmallIcon(R.mipmap.ic_launcher);
+        notfication.setSmallIcon(R.mipmap.ic_launcher); //change notfication image here
         notfication.setTicker("This is the ticker");
         notfication.setWhen(System.currentTimeMillis());
         notfication.setContentTitle("Posture Alert");
         notfication.setContentText("Bad Posture Detected!");
         notfication.setContentIntent(pendingintent);
+        ///////Bad Posture Notfication stuff END/////////////////////////////
+
+
+        ////////Sitting Too Long Notfication Stuff////////////////////////
+        notfication2 = new NotificationCompat.Builder(this);
+        notfication2.setAutoCancel(true);
+
+        Intent intent2 = new Intent(this, Main.class);
+        final PendingIntent pendingintent2 = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        notfication2.setSmallIcon(R.mipmap.ic_launcher); //change notfication image here
+        notfication2.setTicker("This is the ticker");
+        notfication2.setWhen(System.currentTimeMillis());
+        notfication2.setContentTitle("Posture Alert");
+        notfication2.setContentText("You've been sitting for a while. Maybe take a break.");
+        notfication2.setContentIntent(pendingintent);
+        ////////Sitting Too Long Notification Stuff END////////////////////
 
         //Check the most recent posture value. EVERY 2 SECONDS.
         final Handler handler = new Handler();
@@ -285,13 +307,14 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                                             JSONObject jsonObj = new JSONObject(new String(responseBody));
                                             posture_value_good = jsonObj.getInt("good_posture_time");
                                             posture_value_bad = jsonObj.getInt("bad_posture_time");
+                                            recent_posture = jsonObj.getInt("recent_posture");
                                             textGoesHere = (TextView) findViewById(R.id.txtResponse);
                                             textGoesHere2 = (TextView) findViewById(R.id.txtResponse2);
                                             Log.d("Posture", Integer.toString(posture_value_good));
                                             Log.d("Posture2", Integer.toString(posture_value_bad));
-                                            textGoesHere.setText(convertTime(2* posture_value_good));
-                                            textGoesHere2.setText(convertTime(2* posture_value_bad));
-                                            totalTime.setText(convertTime(2* posture_value_good + 2* posture_value_bad));
+                                            Log.d("recent_posture", Integer.toString(recent_posture));
+                                            textGoesHere.setText("GOOD: " + convertTime(2* posture_value_good));
+                                            textGoesHere2.setText("BAD: " + convertTime(2* posture_value_bad));
 
 
                                             // check which ones are the correct posture
@@ -321,6 +344,27 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                                             }
 
                                         }
+
+                                        //Alert users to take a break regardless of setting.
+                                        if( recent_posture != 0){
+                                            notification2_counter = notification2_counter + 1;
+                                        } else{
+                                            notification2_counter = 0;
+                                        }
+
+                                        if(notification2_counter == 60 ){ //i.e sitting down for a 2-minutes
+
+                                            notification2_counter = 0;
+                                            NotificationManager nm2 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                            nm2.notify(uniqueID, notfication2.build());
+                                            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                            v.vibrate(500);
+                                            MakeSound();
+                                            ScreenOn();
+
+                                            Log.d("Tag2", "got notification2");
+                                        }
+                                        //Take a break notifications ends here///////
                                     }
                                 }
 
