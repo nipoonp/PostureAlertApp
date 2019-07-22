@@ -82,7 +82,7 @@ public class Dashboard extends AppCompatActivity {
                     retrofit();
                     return true;
                 case R.id.navigation_line:
-                    mTextMessage.setText("navigation_line");
+                    mTextMessage.setText("Posture vs Time");
                     mChart.setVisibility(View.INVISIBLE);
                     lineChart.setVisibility(View.VISIBLE);
                     barChart.setVisibility(View.INVISIBLE);
@@ -182,8 +182,8 @@ public class Dashboard extends AppCompatActivity {
 
                 ArrayList<Entry> entries = new ArrayList<>();
                 ArrayList<String> labels = new ArrayList<String>();
-                LineDataSet dataset = new LineDataSet(entries, "# of Calls");
-                LineData data = new LineData(labels, dataset);
+                LineDataSet dataset = new LineDataSet(entries, "Time");
+
 
                 switch(graph){
                     case 0:
@@ -216,14 +216,14 @@ public class Dashboard extends AppCompatActivity {
 
 
 
-
+                        LineData data = new LineData(labels, dataset);
                         dataset.setColors(ColorTemplate.COLORFUL_COLORS); //
                         dataset.setDrawCubic(true);
                         dataset.setDrawFilled(false);
 
                         lineChart.setData(data);
                         lineChart.animateY(5000);
-
+//
                         break;
                     case 2:
 //                        entries.clear();

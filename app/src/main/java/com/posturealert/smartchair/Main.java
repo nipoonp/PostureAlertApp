@@ -63,6 +63,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
     TextView totalTime;
     Button button2;
 
+    TextView currentPosture;
+
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -143,6 +146,9 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         textGoesHere.setTypeface(custom_font);
         textGoesHere2.setTypeface(custom_font);
         totalTime.setTypeface(custom_font);
+
+        currentPosture = (TextView) findViewById(R.id.textView3);
+        currentPosture.setTypeface(custom_font);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -313,8 +319,39 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
                                             Log.d("Posture", Integer.toString(posture_value_good));
                                             Log.d("Posture2", Integer.toString(posture_value_bad));
                                             Log.d("recent_posture", Integer.toString(recent_posture));
-                                            textGoesHere.setText("GOOD: " + convertTime(2* posture_value_good));
-                                            textGoesHere2.setText("BAD: " + convertTime(2* posture_value_bad));
+                                            textGoesHere.setText(convertTime(2* posture_value_good));
+                                            textGoesHere2.setText(convertTime(2* posture_value_bad));
+                                            totalTime.setText(convertTime((2*posture_value_bad) + (2*posture_value_good)));
+
+
+                                            if (recent_posture == 0){
+                                                currentPosture.setText("Unoccupied");
+                                            } else if(recent_posture == 1){
+                                                currentPosture.setText("Legs raised");
+                                            }else if(recent_posture == 2){
+                                                currentPosture.setText("Sitting forward");
+                                            }else if(recent_posture == 3){
+                                                currentPosture.setText("Leaning forward");
+                                            }else if(recent_posture == 4){
+                                                currentPosture.setText("Lightly forward");
+                                            }else if(recent_posture == 5){
+                                                currentPosture.setText("Leaning backwards");
+                                            }else if(recent_posture == 6){
+                                                currentPosture.setText("Leaning right");
+                                            }else if(recent_posture == 7){
+                                                currentPosture.setText("Leaning left");
+                                            }else if(recent_posture == 8){
+                                                currentPosture.setText("Right leg crossed");
+                                            }else if(recent_posture == 9){
+                                                currentPosture.setText("Left leg crossed");
+                                            }else if(recent_posture == 10){
+                                                currentPosture.setText("Good posture");
+                                            }else if(recent_posture == 11){
+                                                currentPosture.setText("Perfect posture");
+                                            }
+
+
+
 
 
                                             // check which ones are the correct posture
@@ -392,10 +429,32 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         int hours = totalSecs / 3600;
         int minutes = (totalSecs % 3600) / 60;
         int seconds = totalSecs % 60;
+        String secondsO;
+        String mintuesO;
+
+        if(seconds < 9){
+            secondsO = "0";
+        } else{
+            secondsO = "";
+        }
+
+        if(minutes < 9){
+            mintuesO = "0";
+
+        }else{
+
+            mintuesO = "";
+        }
+
+
+
+
+
+
         if (hours == 0){
-            return minutes + ":" + seconds;
+            return mintuesO + minutes + ":" + secondsO + seconds;
         } else {
-            return hours + ":" + minutes + ":" + seconds;
+            return hours + ":" + mintuesO + minutes + ":" + secondsO + seconds;
         }
 
     }
@@ -432,12 +491,12 @@ public class Main extends AppCompatActivity implements View.OnClickListener {
         notifyFlag = !notifyFlag;
         if(notifyFlag){
             Toast.makeText(getBaseContext(), "Notifications ON", Toast.LENGTH_LONG).show();
-            button2.setBackgroundResource(R.drawable.ic_notifications_active_black_36dp);
+//            button2.setBackgroundResource(R.drawable.ic_notifications_active_black_36dp);
 
 
         }else{
             Toast.makeText(getBaseContext(), "Notifications OFF", Toast.LENGTH_LONG).show();
-            button2.setBackgroundResource(R.drawable.ic_notifications_off_black_36dp);
+//            button2.setBackgroundResource(R.drawable.ic_notifications_off_black_36dp);
         }
 //        try {
 //            notifyThread.join();

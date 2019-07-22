@@ -29,10 +29,10 @@ public class Summary extends AppCompatActivity {
         listDataHeader = new ArrayList<>();
         listHash = new HashMap<>();
 
-        listDataHeader.add("6rd Sep");
-        listDataHeader.add("5th Sep");
-        listDataHeader.add("4th Sep");
-        listDataHeader.add("3th Sep");
+        listDataHeader.add("21 Sep");
+        listDataHeader.add("20 Sep");
+        listDataHeader.add("19 Sep");
+        listDataHeader.add("18 Sep");
 
         List<String> edmtDev = new ArrayList<>();
         edmtDev.add("Good Posture:");
